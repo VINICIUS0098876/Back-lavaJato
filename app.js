@@ -75,16 +75,53 @@ app.get('/v2/lavaRapido/servico', cors(), async function(request, response){
     response.json(dadosServico)
 })
 
+app.get('/v2/lavaRapido/filme/:id', cors(), async function(request, response, next){
+
+    // Recebe o id da requisição
+    let idServico = request.params.id
+    // Encaminha o ID para a controller buscar o Filme
+    let dadosServico = await controllerServico.setListarServicoPeloId(idServico)
+
+    //
+    response.status(200)
+    response.json(dadosServico)
+})
+
 app.delete('/v2/lavaRapido/servico/:id', cors(), async function(request, response, next){
     let idServico = request.params.id
 
     let dadosServico = await controllerServico.setExcluirServico(idServico)
 
-    response.status(dadosServico.status_code)
+    response.status(200)
     response.json(dadosServico)
 })
 
+app.post('/v2/lavaRapido/servico', cors(), bodyParserJSON, async function(request, response){
 
+   
+    // Recebe o content-type da requisição
+    let contentType = request.headers['content-type']
+
+    //Recebe todos os dados encaminhados na requisição pelo Body
+    let dadosBody = request.body
+
+    //Encaminha os dados para a controller enviar para o DAO
+    let resultDadosNovoServico = await controllerServico.setInserirNovoServico(dadosBody, contentType)
+    response.status(200)
+    response.json(resultDadosNovoServico)
+})
+
+app.put('/v2/lavaRapido/servico/:id', cors(), bodyParserJSON, async function(request, response){
+    let contentType = request.headers['content-type']
+    let dadosBody = request.body
+    let idServico = request.params.id
+
+    let dadosServico = await controllerServico.setAtualizarServico(idServico, dadosBody, contentType)
+
+    console.log(dadosServico)
+    response.status(200)
+    response.json(dadosServico)
+})
 
 
 
