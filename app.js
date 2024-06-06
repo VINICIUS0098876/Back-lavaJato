@@ -27,6 +27,8 @@ const controllerCliente = require('./controller/controller_cliente.js')
 
 const controllerServico = require('./controller/controller_servico.js')
 
+const controllerVeiculo = require('./controller/controller_veiculo.js')
+
 /********************************************************** ENDPOINTS CLIENTE *********************************************************/
 app.get('/v2/lavaRapido/cliente', cors(), async function(request, response){
 
@@ -123,6 +125,65 @@ app.put('/v2/lavaRapido/servico/:id', cors(), bodyParserJSON, async function(req
     response.json(dadosServico)
 })
 
+/********************************************************** ENDPOINTS VEICULOS ******************************************************/
+app.get('/v2/lavaRapido/veiculo', cors(), async function(request, response){
+
+
+    // -> Chama a função da controller para retornar todos os filmes
+    let dadosVeiculo = await controllerVeiculo.setListarVeiculos()
+
+    // -> validação para verificar se existem dados a serem retornados
+    response.status(200)
+    response.json(dadosVeiculo)
+})
+
+app.get('/v2/lavaRapido/veiculo/:id', cors(), async function(request, response, next){
+
+    // Recebe o id da requisição
+    let idVeiculo = request.params.id
+    // Encaminha o ID para a controller buscar o Filme
+    let dadosVeiculo = await controllerVeiculo.setListarVeiculosPorId(idVeiculo)
+
+    //
+    response.status(200)
+    response.json(dadosVeiculo)
+})
+
+app.post('/v2/lavaRapido/veiculo', cors(), bodyParserJSON, async function(request, response){
+
+   
+    // Recebe o content-type da requisição
+    let contentType = request.headers['content-type']
+
+    //Recebe todos os dados encaminhados na requisição pelo Body
+    let dadosBody = request.body
+
+    //Encaminha os dados para a controller enviar para o DAO
+    let resultDadosNovoVeiculo = await controllerVeiculo.setInserirNovoVeiculo(dadosBody, contentType)
+    response.status(200)
+    response.json(resultDadosNovoVeiculo)
+})
+
+app.put('/v2/lavaRapido/veiculo/:id', cors(), bodyParserJSON, async function(request, response){
+    let contentType = request.headers['content-type']
+    let dadosBody = request.body
+    let idVeiculo = request.params.id
+
+    let dadosVeiculo = await controllerVeiculo.setAtualizarVeiculo(idVeiculo, dadosBody, contentType)
+
+    console.log(dadosVeiculo)
+    response.status(200)
+    response.json(dadosVeiculo)
+})
+
+app.delete('/v2/lavaRapido/veiculo/:id', cors(), async function(request, response, next){
+    let idVeiculo = request.params.id
+
+    let dadosVeiculo = await controllerVeiculo.setDeletarVeiculo(idVeiculo)
+
+    response.status(200)
+    response.json(dadosVeiculo)
+})
 
 
 app.listen('8080', function(){
