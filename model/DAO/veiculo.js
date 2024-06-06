@@ -7,7 +7,7 @@ const prisma = new PrismaClient()
 
 const insertVeiculo = async function(dadosVeiculo){
     try {
-        const sql = `insert into tbl_veiculos(modelo, marca, ano, placa, cor)values(
+        const sql = `CALL inserir_veiculo_cliente(
             '${dadosVeiculo.modelo}',
          '${dadosVeiculo.marca}',
           '${dadosVeiculo.ano}',
@@ -89,6 +89,11 @@ const getVeiculoById = async function(id){
         return false
     }
 }
+
+
+
+
+
 
 module.exports= {
     insertVeiculo,

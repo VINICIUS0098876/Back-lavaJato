@@ -1,5 +1,6 @@
 const { application } = require('express')
 const clienteDAO = require('../model/DAO/cliente.js')
+const enderecoDAO = require('../model/DAO/endereco.js')
 // Import do arquivo de configuração do projeto
 const message = require('../modulo/config.js')
 const { join } = require('@prisma/client/runtime/library.js')
@@ -58,7 +59,6 @@ const setInserirNovoCliente = async function(dadosCliente, contentType){
                 
                         // Validação para verificar se o DAO inseriu os dados do DB
                         if(novoCliente){
-                console.log(novoCliente);
                             //Cria o JSON de retorno dos dados (201)
                             novoClienteJSON.cliente       = dadosCliente
                             novoClienteJSON.status        = message.SUCCESS_CREATED_ITEM.status
@@ -95,22 +95,8 @@ const setExcluirCliente = async function(id){
             return message.ERROR_INVALID_ID //400
         }else{
            let deleteCliente = await clienteDAO.deleteCliente(idCliente)
-           let deleteClienteVeiculo = await clienteDAO.deleteClienteVeiculo(idCliente)
-           let deleteClienteVeiculoAgendamento = await clienteDAO.deleteClienteVeiculoAgendamento(idCliente)
-           let deleteClienteAgendamentoFuncionario = await clienteDAO.deleteClienteAgendamentoFuncionario(idCliente)
-           let deleteClienteServicosAgendamentos = await clienteDAO.deleteClienteServicosAgendamentos(idCliente)
-           let deleteClientePagamentosServicos = await clienteDAO.deleteClientePagamentosServicos(idCliente)
-           let deleteClienteRecibosPagamentos = await clienteDAO.deleteClienteRecibosPagamentos(idCliente)
-           let deleteClienteAgendamentoClientesVeiculos = await clienteDAO.deleteClienteAgendamentoClientesVeiculos(idCliente)
            
-           if(deleteCliente ||
-             deleteClienteVeiculo ||
-             deleteClienteVeiculoAgendamento ||
-             deleteClienteAgendamentoFuncionario ||
-             deleteClienteServicosAgendamentos ||
-             deleteClientePagamentosServicos ||
-             deleteClienteRecibosPagamentos ||
-             deleteClienteAgendamentoClientesVeiculos){
+           if(deleteCliente){
             return message.SUCCESS_DELETED_ITEM //200
            }else{
             return message.ERROR_NOT_FOUND //400
@@ -131,6 +117,13 @@ const getListarTodosClientes = async function(){
     }else{
         if(dadosCliente){
             if(dadosCliente.length > 0){
+                for(let cliente of dadosCliente){
+                    let veiculoCliente = await clienteDAO.getListarVeiculoPorIdCliente(cliente.id_cliente)
+                    let enderecoCliente = await enderecoDAO.getEnderecoById(cliente.id_endereco_cliente)
+                    delete cliente.id_endereco_cliente
+                    cliente.veiculo = veiculoCliente
+                    cliente.endereco = enderecoCliente
+                }
                 clienteJSON.cliente = dadosCliente
                 clienteJSON.quantidade = dadosCliente.length
                 clienteJSON.status_code = 200

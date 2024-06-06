@@ -29,6 +29,8 @@ const controllerServico = require('./controller/controller_servico.js')
 
 const controllerVeiculo = require('./controller/controller_veiculo.js')
 
+const controllerEndereco = require('./controller/controller_endereco.js')
+
 /********************************************************** ENDPOINTS CLIENTE *********************************************************/
 app.get('/v2/lavaRapido/cliente', cors(), async function(request, response){
 
@@ -46,7 +48,7 @@ app.delete('/v2/lavaRapido/cliente/:id', cors(), async function(request, respons
 
         let dadosCliente = await controllerCliente.setExcluirCliente(idCliente)
 
-        response.status(dadosCliente.status_code)
+        response.status(200)
         response.json(dadosCliente)
 })
 
@@ -183,6 +185,19 @@ app.delete('/v2/lavaRapido/veiculo/:id', cors(), async function(request, respons
 
     response.status(200)
     response.json(dadosVeiculo)
+})
+
+/********************************************************* ENDPOINTS ENDEREÇOS ******************************************************/
+app.get('/v2/lavaRapido/endereco/:id', cors(), async function(request, response, next){
+
+    // Recebe o id da requisição
+    let idEndereco = request.params.id
+    // Encaminha o ID para a controller buscar o Filme
+    let dadosEndereco = await controllerEndereco.setListarEnderecosPeloId(idEndereco)
+
+    //
+    response.status(200)
+    response.json(dadosEndereco)
 })
 
 

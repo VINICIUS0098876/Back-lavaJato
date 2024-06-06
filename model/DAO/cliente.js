@@ -1,4 +1,4 @@
-// Importa de biblioteca do @prisma/client
+1// Importa de biblioteca do @prisma/client
 const { PrismaClient } = require('@prisma/client')
 const { sqltag } = require('@prisma/client/runtime/library')
 
@@ -175,6 +175,37 @@ const IDCliente = async function(){
     }
 }
 
+// APARECER INFO A MAIS
+
+const getListarVeiculoPorIdCliente = async function(id){
+    try {
+        // Realiza a busca do veiculo pelo ID do cliente
+        let sql = `SELECT 
+        v.modelo,
+        v.marca,
+        v.ano,
+        v.placa,
+        v.cor
+    FROM 
+        tbl_clientes c
+    JOIN 
+        tbl_clientes_veiculos cv ON c.id_cliente = cv.id_cliente
+    JOIN 
+        tbl_veiculos v ON cv.id_veiculo = v.id_veiculo
+    WHERE 
+        c.id_cliente = ${id}`;
+    
+        // Executa no banco de dados o script sql
+        let rsCliente = await prisma.$queryRawUnsafe(sql);
+
+            return rsCliente;
+    
+        } catch (error) {
+            return false;
+            
+        }
+}
+
 module.exports = {
     insertCliente,
     updateCliente,
@@ -187,5 +218,6 @@ module.exports = {
     deleteClientePagamentosServicos,
     deleteClienteRecibosPagamentos,
     deleteClienteAgendamentoClientesVeiculos,
-    getListarClientes
+    getListarClientes,
+    getListarVeiculoPorIdCliente
 }

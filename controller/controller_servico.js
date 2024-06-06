@@ -173,7 +173,7 @@ const setListarServicos = async function(){
     }else{
         if(dadosServico){
             if(dadosServico.length > 0){
-                servicoJSON.cliente = dadosServico
+                servicoJSON.servico = dadosServico
                 servicoJSON.quantidade = dadosServico.length
                 servicoJSON.status_code = 200
 
