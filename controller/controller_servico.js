@@ -53,7 +53,9 @@ const setInserirNovoServico = async function(dadosServico, contentType){
                         if(novoServico){
                             //Cria o JSON de retorno dos dados (201)
                             novoServicoJSON.servico       = dadosServico
-                        
+                            novoServicoJSON.status = message.SUCCESS_CREATED_ITEM.status
+                            novoServicoJSON.status_code = message.SUCCESS_CREATED_ITEM.status_code
+                            novoServicoJSON.message = message.SUCCESS_CREATED_ITEM.message
                 
                             return novoServicoJSON //201
                             

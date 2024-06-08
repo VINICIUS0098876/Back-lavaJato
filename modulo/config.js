@@ -20,3 +20,17 @@ const SUCCESS_CREATED_ITEM = {status: true, status_code: 201, message: 'Item cri
 const SUCCESS_DELETED_ITEM = {status: true, status_code: 200, message: 'Item excluído com sucesso!!'}
 
 const SUCCESS_UPDATED_ITEM = {status: true, status_code: 200, message: 'Item Atualizado com sucesso!!'}
+
+
+
+module.exports = {
+    ERROR_INVALID_ID,
+    ERROR_NOT_FOUND,
+    ERROR_INTERNAL_SERVER_DB,
+    ERROR_REQUIRED_FIELDS,
+    ERROR_CONTENT_TYPE,
+    ERROR_INTERNAL_SERVER,
+    SUCCESS_CREATED_ITEM,
+    SUCCESS_DELETED_ITEM,
+    SUCCESS_UPDATED_ITEM
+}

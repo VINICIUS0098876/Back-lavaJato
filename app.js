@@ -31,6 +31,8 @@ const controllerVeiculo = require('./controller/controller_veiculo.js')
 
 const controllerEndereco = require('./controller/controller_endereco.js')
 
+const controllerData = require('./controller/controller_data.js')
+
 /********************************************************** ENDPOINTS CLIENTE *********************************************************/
 app.get('/v2/lavaRapido/cliente', cors(), async function(request, response){
 
@@ -48,7 +50,7 @@ app.delete('/v2/lavaRapido/cliente/:id', cors(), async function(request, respons
 
         let dadosCliente = await controllerCliente.setExcluirCliente(idCliente)
 
-        response.status(200)
+        response.status(dadosCliente.status_code)
         response.json(dadosCliente)
 })
 
@@ -96,7 +98,7 @@ app.delete('/v2/lavaRapido/servico/:id', cors(), async function(request, respons
 
     let dadosServico = await controllerServico.setExcluirServico(idServico)
 
-    response.status(200)
+    response.status(dadosServico.status_code)
     response.json(dadosServico)
 })
 
@@ -135,7 +137,7 @@ app.get('/v2/lavaRapido/veiculo', cors(), async function(request, response){
     let dadosVeiculo = await controllerVeiculo.setListarVeiculos()
 
     // -> validação para verificar se existem dados a serem retornados
-    response.status(200)
+    response.status(dadosVeiculo.status_code)
     response.json(dadosVeiculo)
 })
 
@@ -173,7 +175,6 @@ app.put('/v2/lavaRapido/veiculo/:id', cors(), bodyParserJSON, async function(req
 
     let dadosVeiculo = await controllerVeiculo.setAtualizarVeiculo(idVeiculo, dadosBody, contentType)
 
-    console.log(dadosVeiculo)
     response.status(200)
     response.json(dadosVeiculo)
 })
@@ -183,7 +184,7 @@ app.delete('/v2/lavaRapido/veiculo/:id', cors(), async function(request, respons
 
     let dadosVeiculo = await controllerVeiculo.setDeletarVeiculo(idVeiculo)
 
-    response.status(200)
+    response.status(dadosVeiculo.status_code)
     response.json(dadosVeiculo)
 })
 
@@ -200,6 +201,72 @@ app.get('/v2/lavaRapido/endereco/:id', cors(), async function(request, response,
     response.json(dadosEndereco)
 })
 
+app.get('/v2/lavaRapido/endereco', cors(), async function(request, response){
+
+
+    // -> Chama a função da controller para retornar todos os filmes
+    let dadosEndereco = await controllerEndereco.setListarEnderecos()
+
+    // -> validação para verificar se existem dados a serem retornados
+    response.status(dadosEndereco.status_code)
+    response.json(dadosEndereco)
+})
+
+app.delete('/v2/lavaRapido/endereco/:id', cors(), async function(request, response, next){
+    let idEndereco = request.params.id
+
+    let dadosEndereco = await controllerEndereco.setDeletarEndereco(idEndereco)
+
+    response.status(dadosEndereco.status_code)
+    response.json(dadosEndereco)
+})
+/********************************************************* ENDPOINTS DATAS ******************************************************/
+app.get('/v2/lavaRapido/data/:id', cors(), async function(request, response, next){
+
+    // Recebe o id da requisição
+    let idData = request.params.id
+    // Encaminha o ID para a controller buscar o Filme
+    let dadosData = await controllerData.setListarDataPeloId(idData)
+
+    //
+    response.status(200)
+    response.json(dadosData)
+})
+
+app.get('/v2/lavaRapido/data', cors(), async function(request, response){
+
+
+    // -> Chama a função da controller para retornar todos os filmes
+    let dadosData = await controllerData.setListarData()
+
+    // -> validação para verificar se existem dados a serem retornados
+    response.status(dadosData.status_code)
+    response.json(dadosData)
+})
+
+app.delete('/v2/lavaRapido/data/:id', cors(), async function(request, response, next){
+    let idData = request.params.id
+
+    let dadosData = await controllerData.setDeletarData(idData)
+
+    response.status(dadosData.status_code)
+    response.json(dadosData)
+})
+
+app.post('/v2/lavaRapido/data', cors(), bodyParserJSON, async function(request, response){
+
+   
+    // Recebe o content-type da requisição
+    let contentType = request.headers['content-type']
+
+    //Recebe todos os dados encaminhados na requisição pelo Body
+    let dadosBody = request.body
+
+    //Encaminha os dados para a controller enviar para o DAO
+    let resultDadosNovaData = await controllerData.setInserirNovaData(dadosBody,contentType)
+    response.status(200)
+    response.json(resultDadosNovaData)
+})
 
 app.listen('8080', function(){
     console.log('API funcionando!!')
