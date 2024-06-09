@@ -33,6 +33,8 @@ const controllerEndereco = require('./controller/controller_endereco.js')
 
 const controllerData = require('./controller/controller_data.js')
 
+const controllerHora = require('./controller/controller_hora.js')
+
 /********************************************************** ENDPOINTS CLIENTE *********************************************************/
 app.get('/v2/lavaRapido/cliente', cors(), async function(request, response){
 
@@ -220,6 +222,7 @@ app.delete('/v2/lavaRapido/endereco/:id', cors(), async function(request, respon
     response.status(dadosEndereco.status_code)
     response.json(dadosEndereco)
 })
+
 /********************************************************* ENDPOINTS DATAS ******************************************************/
 app.get('/v2/lavaRapido/data/:id', cors(), async function(request, response, next){
 
@@ -266,6 +269,75 @@ app.post('/v2/lavaRapido/data', cors(), bodyParserJSON, async function(request, 
     let resultDadosNovaData = await controllerData.setInserirNovaData(dadosBody,contentType)
     response.status(200)
     response.json(resultDadosNovaData)
+})
+
+app.put('/v2/lavaRapido/data/:id', cors(), bodyParserJSON, async function(request, response){
+    let contentType = request.headers['content-type']
+    let dadosBody = request.body
+    let idData = request.params.id
+
+    let dadosData = await controllerData.setAtualizarData(idData, dadosBody, contentType)
+
+    response.status(200)
+    response.json(dadosData)
+})
+/********************************************************* ENDPOINTS HORAS ******************************************************/
+app.get('/v2/lavaRapido/hora', cors(), async function(request, response){
+
+
+    // -> Chama a função da controller para retornar todos os filmes
+    let dadosHora = await controllerHora.setListarHoras()
+
+    // -> validação para verificar se existem dados a serem retornados
+    response.status(dadosHora.status_code)
+    response.json(dadosHora)
+})
+
+app.get('/v2/lavaRapido/hora/:id', cors(), async function(request, response, next){
+
+    // Recebe o id da requisição
+    let idHora = request.params.id
+    // Encaminha o ID para a controller buscar o Filme
+    let dadosHora = await controllerHora.setListarHorasPeloId(idHora)
+
+    //
+    response.status(200)
+    response.json(dadosHora)
+})
+
+app.delete('/v2/lavaRapido/hora/:id', cors(), async function(request, response, next){
+    let idHora = request.params.id
+
+    let dadosHora = await controllerHora.setDeletarHoras(idHora)
+
+    response.status(dadosHora.status_code)
+    response.json(dadosHora)
+})
+
+app.post('/v2/lavaRapido/hora', cors(), bodyParserJSON, async function(request, response){
+
+   
+    // Recebe o content-type da requisição
+    let contentType = request.headers['content-type']
+
+    //Recebe todos os dados encaminhados na requisição pelo Body
+    let dadosBody = request.body
+
+    //Encaminha os dados para a controller enviar para o DAO
+    let resultDadosNovaHora = await controllerHora.setInserirHoras(dadosBody,contentType)
+    response.status(200)
+    response.json(resultDadosNovaHora)
+})
+
+app.put('/v2/lavaRapido/hora/:id', cors(), bodyParserJSON, async function(request, response){
+    let contentType = request.headers['content-type']
+    let dadosBody = request.body
+    let idHora = request.params.id
+
+    let dadosHora = await controllerHora.setAtualizarHoras(idHora, dadosBody, contentType)
+
+    response.status(200)
+    response.json(dadosHora)
 })
 
 app.listen('8080', function(){

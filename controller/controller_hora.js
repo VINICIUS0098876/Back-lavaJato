@@ -1,12 +1,12 @@
 const { application } = require('express')
-const dataDAO = require('../model/DAO/data.js')
+const horaDAO = require('../model/DAO/hora.js')
 // Import do arquivo de configuração do projeto
 const message = require('../modulo/config.js')
 const { join } = require('@prisma/client/runtime/library.js')
 const { json } = require('body-parser')
 
-const setInserirNovaData = async function(dadosData, contentType){
-    
+
+const setInserirHoras = async function(dadosHora, contentType){
     try{
         let validateStatus = false
 
@@ -14,11 +14,11 @@ const setInserirNovaData = async function(dadosData, contentType){
         if(String(contentType).toLowerCase() == 'application/json'){
             
             // Cria o objeto JSON para devolver os dados criados na requisição
-                let novaDataJSON = {}
+                let novaHoraJSON = {}
             
                 
                 //Validação de campos obrigatórios ou com digitação inválida
-                if(dadosData.datas == ''    || dadosData.datas == undefined      || dadosData.datas == null         || dadosData.datas.length > 10
+                if(dadosHora.horas == ''    || dadosHora.horas == undefined      || dadosHora.horas == null         || dadosHora.horas.length > 8
                 ){
                     
 
@@ -38,24 +38,24 @@ const setInserirNovaData = async function(dadosData, contentType){
 
             
                         // Encaminha os dados do filme para o DAO inserir no DB
-                        let novaData = await dataDAO.insertData(dadosData)
+                        let novaHora = await horaDAO.insertHoras(dadosHora)
                         
                         
                         
-                        if(novaData){
-                            let idDatas = await dataDAO.dataID()
-                            dadosData.id = Number(idDatas[0].id)
+                        if(novaHora){
+                            let idHoras = await horaDAO.horasID()
+                            dadosHora.id = Number(idHoras[0].id)
                         }
                 
                         // Validação para verificar se o DAO inseriu os dados do DB
-                        if(novaData){
+                        if(novaHora){
                             //Cria o JSON de retorno dos dados (201)
-                            novaDataJSON.data       = dadosData
-                            novaDataJSON.status = message.SUCCESS_CREATED_ITEM.status
-                            novaDataJSON.status_code = message.SUCCESS_CREATED_ITEM.status_code
-                            novaDataJSON.message = message.SUCCESS_CREATED_ITEM.message
+                            novaHoraJSON.horas       = dadosHora
+                            novaHoraJSON.status = message.SUCCESS_CREATED_ITEM.status
+                            novaHoraJSON.status_code = message.SUCCESS_CREATED_ITEM.status_code
+                            novaHoraJSON.message = message.SUCCESS_CREATED_ITEM.message
                 
-                            return novaDataJSON //201
+                            return novaHoraJSON //201
                             
                         }else{
                             return message.ERROR_INTERNAL_SERVER_DB //500
@@ -72,26 +72,26 @@ const setInserirNovaData = async function(dadosData, contentType){
     }
 }
 
-const setAtualizarData = async function(id, dadosAtualizados, contentType){
+const setAtualizarHoras = async function(id, dadosAtualizados, contentType){
     try{
 
-        let idData = id
+        let idHora = id
 
         // Validação de content-type (apenas aplication/json)
         if(String(contentType).toLowerCase() == 'application/json'){
-            let dadosID = dataDAO.getListarDataById()
+            let dadosID = horaDAO.getListarHorasById()
             
-            if(idData == '' || idData == undefined || idData == isNaN(idData) || idData == null){
+            if(idHora == '' || idHora == undefined || idHora == isNaN(idHora) || idHora == null){
                 return message.ERROR_INVALID_ID
 
-            }else if(idData>dadosID.length){
+            }else if(idHora>dadosID.length){
                 return message.ERROR_NOT_FOUND
             }else{
                 // Cria o objeto JSON para devolver os dados criados na requisição
-                    let atualizarDataJSON = {}
+                    let atualizarHoraJSON = {}
 
                     //Validação de campos obrigatórios ou com digitação inválida
-                    if(dadosAtualizados.datas == ''                  || dadosAtualizados.datas == undefined            || dadosAtualizados.datas == null            || dadosAtualizados.datas.length > 10          
+                    if(dadosAtualizados.horas == ''                  || dadosAtualizados.horas == undefined            || dadosAtualizados.horas == null            || dadosAtualizados.horas.length > 8          
                     ){
                         return message.ERROR_REQUIRED_FIELDS
                     }
@@ -104,17 +104,17 @@ const setAtualizarData = async function(id, dadosAtualizados, contentType){
                         // Validação para verificar se a variavel booleana é verdadeira
                         if(validateStatus){
                             // Encaminha os dados do filme para o DAO inserir no DB
-                            let dadosData = await dataDAO.updateData(idData, dadosAtualizados)
+                            let dadosHora = await horaDAO.updateHoras(idHora, dadosAtualizados)
                             
                             // Validação para verificar se o DAO inseriu os dados do DB
-                            if(dadosData){
+                            if(dadosHora){
                     
                                 //Cria o JSON de retorno dos dados (201)
-                                atualizarDataJSON.data       = dadosData
-                                atualizarDataJSON.status      = message.SUCCESS_UPDATED_ITEM.status
-                                atualizarDataJSON.status_code = message.SUCCESS_UPDATED_ITEM.status_code
-                                atualizarDataJSON.message     = message.SUCCESS_UPDATED_ITEM.message
-                                return atualizarDataJSON //201
+                                atualizarHoraJSON.horas       = dadosHora
+                                atualizarHoraJSON.status      = message.SUCCESS_UPDATED_ITEM.status
+                                atualizarHoraJSON.status_code = message.SUCCESS_UPDATED_ITEM.status_code
+                                atualizarHoraJSON.message     = message.SUCCESS_UPDATED_ITEM.message
+                                return atualizarHoraJSON //201
                                 
                             }else{
                                 return message.ERROR_INTERNAL_SERVER_DB //500
@@ -136,16 +136,16 @@ const setAtualizarData = async function(id, dadosAtualizados, contentType){
     }
 }
 
-const setDeletarData = async function(id){
+const setDeletarHoras = async function(id){
     try {
-        let idData = id
+        let idHora = id
 
-        if(idData == '' || idData == undefined || idData == isNaN(idData) || idData == null){
+        if(idHora == '' || idHora == undefined || idHora == isNaN(idHora) || idHora == null){
             return message.ERROR_INVALID_ID //400
         }else{
-           let deleteData = await dataDAO.deleteData(idData)
+           let deleteHoras = await horaDAO.deleteHoras(idHora)
            
-           if(deleteData){
+           if(deleteHoras){
             return message.SUCCESS_DELETED_ITEM //200
            }else{
             return message.ERROR_NOT_FOUND //400
@@ -156,21 +156,21 @@ const setDeletarData = async function(id){
     }
 }
 
-const setListarData = async function(){
-    let dataJSON = {}
+const setListarHoras = async function(){
+    let horaJSON = {}
 
-    let dadosData = await dataDAO.getListarData()
+    let dadosHora = await horaDAO.getListarHoras()
 
-    if(dadosData == '' || dadosData == undefined){
+    if(dadosHora == '' || dadosHora == undefined){
         return message.ERROR_INVALID_ID //400
     }else{
-        if(dadosData){
-            if(dadosData.length > 0){
-                dataJSON.data = dadosData
-                dataJSON.quantidade = dadosData.length
-                dataJSON.status_code = 200
+        if(dadosHora){
+            if(dadosHora.length > 0){
+                horaJSON.horas = dadosHora
+                horaJSON.quantidade = dadosHora.length
+                horaJSON.status_code = 200
 
-                return dataJSON
+                return horaJSON
             }else{
                 return message.ERROR_NOT_FOUND //400
             }
@@ -180,44 +180,44 @@ const setListarData = async function(){
     }
 }
 
-const setListarDataPeloId = async function(id){
+const setListarHorasPeloId = async function(id){
     try {
-    let idData = id
-
-    //Cria o objeto JSON
-    let dataJSON = {}
-
-    //Validação para verificar se o id é válido(Vazio, indefinido e não numérico)
-    if(idData == '' || idData == undefined || isNaN(idData)){
-        return message.ERROR_INVALID_ID // 400
-    }else{
-        //Encaminha para o DAO localizar o id do filme 
-        let dadosData = await dataDAO.getListarDataById(idData)
-        // Validação para verificar se existem dados de retorno
-        if(dadosData){
-            // Validação para verificar a quantidade de itens encontrados.
-            if(dadosData.length > 0){
-                //Criar o JSON de retorno
-                dataJSON.data = dadosData
-                dataJSON.status_code = 200
-
-                return dataJSON
-            }else{
-                return message.ERROR_NOT_FOUND // 404
-            }
+        let idHora = id
+    
+        //Cria o objeto JSON
+        let horaJSON = {}
+    
+        //Validação para verificar se o id é válido(Vazio, indefinido e não numérico)
+        if(idHora == '' || idHora == undefined || isNaN(idHora)){
+            return message.ERROR_INVALID_ID // 400
         }else{
-            return message.ERROR_INTERNAL_SERVER_DB // 500
+            //Encaminha para o DAO localizar o id do filme 
+            let dadosHora = await horaDAO.getListarHorasById(idHora)
+            // Validação para verificar se existem dados de retorno
+            if(dadosHora){
+                // Validação para verificar a quantidade de itens encontrados.
+                if(dadosHora.length > 0){
+                    //Criar o JSON de retorno
+                    horaJSON.hora = dadosHora
+                    horaJSON.status_code = 200
+    
+                    return horaJSON
+                }else{
+                    return message.ERROR_NOT_FOUND // 404
+                }
+            }else{
+                return message.ERROR_INTERNAL_SERVER_DB // 500
+            }
         }
-    }
-   } catch (error) {
-       return message.ERROR_INTERNAL_SERVER_DB
-   }
+       } catch (error) {
+           return message.ERROR_INTERNAL_SERVER_DB
+       }
 }
 
 module.exports = {
-    setInserirNovaData,
-    setAtualizarData,
-    setDeletarData,
-    setListarData,
-    setListarDataPeloId
+    setInserirHoras,
+    setAtualizarHoras,
+    setDeletarHoras,
+    setListarHoras,
+    setListarHorasPeloId
 }

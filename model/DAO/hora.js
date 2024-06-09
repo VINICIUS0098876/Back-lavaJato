@@ -5,9 +5,9 @@ const { sqltag } = require('@prisma/client/runtime/library')
 // Instacia da classe PrismaClient
 const prisma = new PrismaClient()
 
-const insertData = async function(dadosData){
+const insertHoras = async function(dadosHora){
     try {
-        const sql = `insert into tbl_datas(datas)values('${dadosData.datas}')`
+        const sql = `CALL inserir_hora_data('${dadosHora.horas}')`
         
         let result = await prisma.$executeRawUnsafe(sql)
 
@@ -21,14 +21,14 @@ const insertData = async function(dadosData){
     }
 }
 
-const updateData = async function(idData, dadosAtualizados){
+const updateHoras = async function(idHora, dadosAtualizados){
     try{
         let sql
         {
-            sql = `update tbl_datas SET 
-            datas = '${dadosAtualizados.datas}'
+            sql = `update tbl_horas SET 
+            horas = '${dadosAtualizados.horas}'
             WHERE
-           id_data = ${idData}`
+           id_horario = ${idHora}`
         }
         let result = await prisma.$executeRawUnsafe(sql)
 
@@ -41,46 +41,46 @@ const updateData = async function(idData, dadosAtualizados){
     }
 }
 
-const deleteData = async function(id){
+const deleteHoras = async function(id){
     try {
-        let sql = `delete from tbl_datas where id_data = ${id}`
+        let sql = `delete from tbl_horas where id_horario = ${id}`
 
-        let rsData = await prisma.$executeRawUnsafe(sql)
-        return rsData
+        let rsHoras = await prisma.$executeRawUnsafe(sql)
+        return rsHoras
     } catch (error) {
         return false
     }
 }
 
-const getListarData = async function(){
+const getListarHoras = async function(){
     try {
-        let sql = 'select * from tbl_datas;'
-        let rsData = await prisma.$queryRawUnsafe(sql)
-        return rsData
+        let sql = 'select * from tbl_horas;'
+        let rsHoras = await prisma.$queryRawUnsafe(sql)
+        return rsHoras
     } catch (error) {
         console.log(error)
         return false
     }
 }
 
-const getListarDataById = async function(id){
+const getListarHorasById = async function(id){
     try {
         // Script sql para buscar o filme pelo id
-        const sql = `select * from tbl_datas where tbl_datas.id_data = ${id}`
+        const sql = `select * from tbl_horas where tbl_horas.id_horario = ${id}`
 
     
         // Caminha o script sql para o banco de dados
-        let rsData = await prisma.$queryRawUnsafe(sql)
+        let rsHoras = await prisma.$queryRawUnsafe(sql)
     
-        return rsData
+        return rsHoras
     } catch (error) {
         return false
     }
 }
 
-const dataID = async function(){
+const horasID = async function(){
     try {
-        let sql = `select cast(last_insert_id() as DECIMAL) as id from tbl_datas limit 1`
+        let sql = `select cast(last_insert_id() as DECIMAL) as id from tbl_horas limit 1`
 
         let sqlID = await prisma.$queryRawUnsafe(sql)
 
@@ -91,10 +91,10 @@ const dataID = async function(){
 }
 
 module.exports = {
-    insertData,
-    updateData,
-    deleteData,
-    getListarData,
-    getListarDataById,
-    dataID
+    insertHoras,
+    updateHoras,
+    deleteHoras,
+    getListarHoras,
+    getListarHorasById,
+    horasID
 }
