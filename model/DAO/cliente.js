@@ -64,6 +64,18 @@ const IDCliente = async function(){
     }
 }
 
+const getListarClientes = async function(){
+    try {
+        let sql = `select * from tbl_clientes`
+
+        let sqlID = await prisma.$queryRawUnsafe(sql)
+
+        return sqlID
+    } catch (error) {
+        return false
+    }
+}
+
 // APARECER INFO A MAIS
 
 const getListarVeiculoPorIdCliente = async function(id){
@@ -95,10 +107,70 @@ const getListarVeiculoPorIdCliente = async function(id){
         }
 }
 
+const getListarAgendamentoCliente = async function(id){
+    try {
+        // Realiza a busca do veiculo pelo ID do cliente
+        let sql = `SELECT 
+        datas.datas,
+        horas.horas,
+        clientes.nome AS nome_cliente,
+        clientes.email AS email_cliente,
+        clientes.telefone AS telefone_cliente,
+        veiculos.modelo AS modelo_veiculo,
+        veiculos.marca AS marca_veiculo,
+        veiculos.ano AS ano_veiculo,
+        veiculos.placa AS placa_veiculo,
+        veiculos.cor AS cor_veiculo
+    FROM 
+        tbl_agendamentos AS agendamentos
+    JOIN 
+        tbl_datas_horarios AS datas_horarios ON agendamentos.id_data_horario = datas_horarios.id_data_horario
+    JOIN 
+        tbl_datas AS datas ON datas_horarios.id_data = datas.id_data
+    JOIN 
+        tbl_horas AS horas ON datas_horarios.id_horario = horas.id_horario
+    JOIN 
+        tbl_clientes_veiculos AS clientes_veiculos ON agendamentos.id_cliente_veiculo = clientes_veiculos.id_cliente_veiculo
+    JOIN 
+        tbl_clientes AS clientes ON clientes_veiculos.id_cliente = clientes.id_cliente
+    JOIN 
+        tbl_veiculos AS veiculos ON clientes_veiculos.id_veiculo = veiculos.id_veiculo
+    WHERE
+        clientes.id_cliente = ${id}`;
+    
+        // Executa no banco de dados o script sql
+        let rsCliente = await prisma.$queryRawUnsafe(sql);
+
+            return rsCliente;
+    
+        } catch (error) {
+            return false;
+            
+        }
+}
+
+const getListarClienteById = async function(id){
+    try {
+        // Script sql para buscar o filme pelo id
+        const sql = `select * from tbl_clientes where tbl_clientes.id_cliente = ${id}`
+    
+        // Caminha o script sql para o banco de dados
+        let rsFilme = await prisma.$queryRawUnsafe(sql)
+
+        return rsFilme
+    } catch (error) {
+        console.log(error)
+        return false
+    }
+}
+
 module.exports = {
     insertCliente,
     updateCliente,
     deleteCliente,
     IDCliente,
-    getListarVeiculoPorIdCliente
+    getListarClientes,
+    getListarVeiculoPorIdCliente,
+    getListarAgendamentoCliente,
+    getListarClienteById
 }

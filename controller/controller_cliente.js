@@ -120,9 +120,11 @@ const getListarTodosClientes = async function(){
                 for(let cliente of dadosCliente){
                     let veiculoCliente = await clienteDAO.getListarVeiculoPorIdCliente(cliente.id_cliente)
                     let enderecoCliente = await enderecoDAO.getEnderecoById(cliente.id_endereco_cliente)
+                    let agendamentoCliente = await clienteDAO.getListarAgendamentoCliente(cliente.id_cliente)
                     delete cliente.id_endereco_cliente
                     cliente.veiculo = veiculoCliente
                     cliente.endereco = enderecoCliente
+                    cliente.agendamento = agendamentoCliente
                 }
                 clienteJSON.cliente = dadosCliente
                 clienteJSON.quantidade = dadosCliente.length
@@ -139,9 +141,64 @@ const getListarTodosClientes = async function(){
     
 }
 
+const getListarClienteById = async function(id){
+    try {
+        // Recebe o id do filme
+     
+    let idCliente = id
+
+    //Cria o objeto JSON
+    let clienteJSON = {}
+
+
+    //Validação para verificar se o id é válido(Vazio, indefinido e não numérico)
+    if(idCliente == '' || idCliente == undefined || isNaN(idCliente)){
+        return message.ERROR_INVALID_ID // 400
+    }else{
+
+        //Encaminha para o DAO localizar o id do filme 
+        let dadosCliente = await clienteDAO.getListarClienteById(idCliente)
+
+        // Validação para verificar se existem dados de retorno
+        if(dadosCliente){
+
+            // Validação para verificar a quantidade de itens encontrados.
+            if(dadosCliente.length > 0){
+
+                for(let cliente of dadosCliente){
+                    let veiculoCliente = await clienteDAO.getListarVeiculoPorIdCliente(cliente.id_cliente)
+                    let enderecoCliente = await enderecoDAO.getEnderecoById(cliente.id_endereco_cliente)
+                    let agendamentoCliente = await clienteDAO.getListarAgendamentoCliente(cliente.id_cliente)
+                    delete cliente.id_endereco_cliente
+                    cliente.veiculo = veiculoCliente
+                    cliente.endereco = enderecoCliente
+                    cliente.agendamento = agendamentoCliente
+                }
+
+                //Criar o JSON de retorno
+                clienteJSON.servico = dadosCliente
+                clienteJSON.status_code = 200
+    
+                
+                return clienteJSON
+            }else{
+                return message.ERROR_NOT_FOUND // 404
+            }
+
+        }else{
+            return message.ERROR_INTERNAL_SERVER_DB // 500
+        }
+    }
+   } catch (error) {
+    console.log(error)
+       return message.ERROR_INTERNAL_SERVER_DB
+   }
+}
+
 module.exports = {
     setInserirNovoCliente,
     setAtualizarCliente,
     setExcluirCliente,
-    getListarTodosClientes
+    getListarTodosClientes,
+    getListarClienteById
 }

@@ -47,6 +47,18 @@ app.get('/v2/lavaRapido/cliente', cors(), async function(request, response){
     response.json(dadosCliente)
 })
 
+app.get('/v2/lavaRapido/cliente/:id', cors(), async function(request, response, next){
+
+    // Recebe o id da requisição
+    let idCliente = request.params.id
+    // Encaminha o ID para a controller buscar o Filme
+    let dadosCliente = await controllerCliente.getListarClienteById(idCliente)
+
+    //
+    response.status(200)
+    response.json(dadosCliente)
+})
+
 app.delete('/v2/lavaRapido/cliente/:id', cors(), async function(request, response, next){
         let idCliente = request.params.id
 
@@ -83,7 +95,7 @@ app.get('/v2/lavaRapido/servico', cors(), async function(request, response){
     response.json(dadosServico)
 })
 
-app.get('/v2/lavaRapido/filme/:id', cors(), async function(request, response, next){
+app.get('/v2/lavaRapido/servico/:id', cors(), async function(request, response, next){
 
     // Recebe o id da requisição
     let idServico = request.params.id
