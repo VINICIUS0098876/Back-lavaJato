@@ -55,7 +55,7 @@ const setInserirNovoVeiculo = async function(dadosVeiculo, contentType){
                         // Validação para verificar se o DAO inseriu os dados do DB
                         if(novoVeiculo){
                             //Cria o JSON de retorno dos dados (201)
-                            novoVeiculoJSON.servico       = dadosServico
+                            novoVeiculoJSON.servico       = dadosVeiculo
                         
                 
                             return novoVeiculoJSON //201

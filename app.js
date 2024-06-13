@@ -131,6 +131,21 @@ app.post('/v2/lavaRapido/servico', cors(), bodyParserJSON, async function(reques
     response.json(resultDadosNovoServico)
 })
 
+app.post('/v2/lavaRapido/servicoAgendamento', cors(), bodyParserJSON, async function(request, response){
+
+   
+    // Recebe o content-type da requisição
+    let contentType = request.headers['content-type']
+
+    //Recebe todos os dados encaminhados na requisição pelo Body
+    let dadosBody = request.body
+
+    //Encaminha os dados para a controller enviar para o DAO
+    let resultDadosNovoServicoAgendamento = await controllerServico.setInserirServicoAgendamento(dadosBody, contentType)
+    response.status(200)
+    response.json(resultDadosNovoServicoAgendamento)
+})
+
 app.put('/v2/lavaRapido/servico/:id', cors(), bodyParserJSON, async function(request, response){
     let contentType = request.headers['content-type']
     let dadosBody = request.body

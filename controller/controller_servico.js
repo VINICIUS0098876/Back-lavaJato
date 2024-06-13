@@ -78,6 +78,75 @@ const setInserirNovoServico = async function(dadosServico, contentType){
     }
 }
 
+const setInserirServicoAgendamento = async function(dadosServico, contentType){
+    try{
+        let validateStatus = false
+        
+        // Validação de content-type (apenas aplication/json)
+        if(String(contentType).toLowerCase() == 'application/json'){
+            
+            // Cria o objeto JSON para devolver os dados criados na requisição
+            let novoAgendamentoJSON = {}
+            
+            
+            //Validação de campos obrigatórios ou com digitação inválida
+            if(dadosServico.p_detalhes_adicionais == ''    || dadosServico.p_detalhes_adicionais == undefined      || dadosServico.p_detalhes_adicionais == null         || dadosServico.p_detalhes_adicionais.length > 2000){
+                    console.log(dadosServico)
+                    
+
+                    return message.ERROR_REQUIRED_FIELDS
+                    
+                }
+            
+                else{
+                   
+
+                    validateStatus=true
+                    
+                    
+                    // Validação para verificar se a variavel booleana é verdadeira
+                    if(validateStatus){
+                        
+
+            
+                        // Encaminha os dados do filme para o DAO inserir no DB
+                        let novoServico = await servicoDAO.insertServicoAgendamento(dadosServico)
+                        
+                        
+                        
+                        // if(novoServico){
+                        //     let idServicos = await servicoDAO.IDServico()
+                        //     dadosServico.id = Number(idServicos[0].id)
+                        // }
+                
+                        // Validação para verificar se o DAO inseriu os dados do DB
+                        if(novoServico){
+                            //Cria o JSON de retorno dos dados (201)
+                            novoAgendamentoJSON.detalhes       = dadosServico
+                            novoAgendamentoJSON.status = message.SUCCESS_CREATED_ITEM.status
+                            novoAgendamentoJSON.status_code = message.SUCCESS_CREATED_ITEM.status_code
+                            novoAgendamentoJSON.message = message.SUCCESS_CREATED_ITEM.message
+                
+                            return novoAgendamentoJSON //201
+                            
+                        }else{
+                            return message.ERROR_INTERNAL_SERVER_DB //500
+                        }
+                    }else{
+                        validateStatus = false
+                    }
+            
+                }
+            }else{
+                return message.ERROR_CONTENT_TYPE //415
+            }
+    }catch(error){
+        console.log(error)
+
+        return message.ERROR_INTERNAL_SERVER //500 - erro na controller
+    }
+}
+
 const setAtualizarServico = async function(id, dadosAtualizados,contentType){
     try{
 
@@ -236,5 +305,6 @@ module.exports = {
     setInserirNovoServico,
     setExcluirServico,
     setListarServicos,
-    setListarServicoPeloId
+    setListarServicoPeloId,
+    setInserirServicoAgendamento
 }

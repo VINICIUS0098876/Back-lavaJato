@@ -9,15 +9,13 @@ const insertCliente = async function(dadosCliente){
 
     try {
         let sql = `CALL inserir_cliente_com_endereco(
-            '${dadosCliente.p_nome}',
-            '${dadosCliente.p_foto}',  
+            '${dadosCliente.p_nome}', 
             '${dadosCliente.p_email}',
             '${dadosCliente.p_senha}',
             '${dadosCliente.p_telefone}',
             '${dadosCliente.p_rua}',
             '${dadosCliente.p_cep}',
             '${dadosCliente.p_numero}', 
-            '${dadosCliente.p_complemento}',
             '${dadosCliente.p_bairro}',
             '${dadosCliente.p_estado}',
             '${dadosCliente.p_cidade}'
@@ -110,7 +108,7 @@ const getListarVeiculoPorIdCliente = async function(id){
 const getListarAgendamentoCliente = async function(id){
     try {
         // Realiza a busca do veiculo pelo ID do cliente
-        let sql = `SELECT 
+        let sql = `SELECT
         datas.datas,
         horas.horas,
         clientes.nome AS nome_cliente,
@@ -120,21 +118,29 @@ const getListarAgendamentoCliente = async function(id){
         veiculos.marca AS marca_veiculo,
         veiculos.ano AS ano_veiculo,
         veiculos.placa AS placa_veiculo,
-        veiculos.cor AS cor_veiculo
-    FROM 
+        veiculos.cor AS cor_veiculo,
+        servicos.tipo_servico AS tipo_servico,
+        servicos.descricao AS descricao_servico,
+        servicos.preco AS preco_servico,
+        servicos_agendamentos.detalhes_adicionais -- Adicione aqui o campo específico de detalhes adicionais da tbl_servicos_agendamentos
+    FROM
         tbl_agendamentos AS agendamentos
-    JOIN 
+    JOIN
         tbl_datas_horarios AS datas_horarios ON agendamentos.id_data_horario = datas_horarios.id_data_horario
-    JOIN 
+    JOIN
         tbl_datas AS datas ON datas_horarios.id_data = datas.id_data
-    JOIN 
+    JOIN
         tbl_horas AS horas ON datas_horarios.id_horario = horas.id_horario
-    JOIN 
+    JOIN
         tbl_clientes_veiculos AS clientes_veiculos ON agendamentos.id_cliente_veiculo = clientes_veiculos.id_cliente_veiculo
-    JOIN 
+    JOIN
         tbl_clientes AS clientes ON clientes_veiculos.id_cliente = clientes.id_cliente
-    JOIN 
+    JOIN
         tbl_veiculos AS veiculos ON clientes_veiculos.id_veiculo = veiculos.id_veiculo
+    JOIN
+        tbl_servicos_agendamentos AS servicos_agendamentos ON agendamentos.id_agendamento = servicos_agendamentos.id_agendamento
+    JOIN
+        tbl_servicos AS servicos ON servicos_agendamentos.id_servico = servicos.id_servico
     WHERE
         clientes.id_cliente = ${id}`;
     

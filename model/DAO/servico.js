@@ -21,6 +21,30 @@ const insertServico = async function(dadosServico){
     }
 }
 
+const insertServicoAgendamento = async function(dadosServico){
+    let sql
+    try {
+        if(dadosServico.p_detalhes_adicionais != '' &&
+            dadosServico.p_detalhes_adicionais != null &&
+            dadosServico.p_detalhes_adicionais != undefined ){
+
+                sql = `CALL inserir_servico_agendamento('${dadosServico.p_detalhes_adicionais}');`
+        }else{
+            sql = `CALL inserir_servico_agendamento('${null}');`
+        }
+        
+        let result = await prisma.$executeRawUnsafe(sql)
+
+        if(result){
+           return true
+        }else{
+           return false
+        }
+    } catch (error) {
+        return false
+    }
+}
+
 const updateServico = async function(idServico, dadosAtualizados){
     try{
         let sql
@@ -95,11 +119,14 @@ const IDServico = async function(){
     }
 }
 
+
+
 module.exports = {
     insertServico,
     updateServico,
     deleteServico,
     getListarServicos,
     IDServico,
-    getServicosById
+    getServicosById,
+    insertServicoAgendamento
 }

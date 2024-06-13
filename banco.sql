@@ -21,6 +21,9 @@ CREATE TABLE tbl_clientes (
         REFERENCES tbl_enderecos_clientes(id_endereco_cliente)
 );
 
+alter table tbl_enderecos_clientes
+	drop column complemento;
+
 select * from tbl_clientes;
 
 INSERT INTO tbl_clientes(nome, foto, email, senha, telefone, id_endereco)VALUES
@@ -37,14 +40,12 @@ select * from tbl_enderecos;
 
 CREATE PROCEDURE inserir_cliente_com_endereco (
     IN p_nome VARCHAR(100),
-    IN p_foto VARCHAR(250),
     IN p_email VARCHAR(150),
     IN p_senha VARCHAR(100),
     IN p_telefone VARCHAR(18),
     IN p_rua VARCHAR(45),
     IN p_cep FLOAT,
     IN p_numero FLOAT,
-    IN p_complemento VARCHAR(100),
     IN p_bairro VARCHAR(150),
     IN p_estado VARCHAR(80),
     IN p_cidade VARCHAR(80)
@@ -53,22 +54,22 @@ BEGIN
     DECLARE v_id_endereco_cliente INT;
 
     -- Inserir o endereço
-    INSERT INTO tbl_enderecos_clientes (rua, cep, numero, complemento, bairro, estado, cidade)
-    VALUES (p_rua, p_cep, p_numero, p_complemento, p_bairro, p_estado, p_cidade);
+    INSERT INTO tbl_enderecos_clientes (rua, cep, numero, bairro, estado, cidade)
+    VALUES (p_rua, p_cep, p_numero, p_bairro, p_estado, p_cidade);
 
     -- Obter o ID do endereço inserido
     SET v_id_endereco_cliente = LAST_INSERT_ID();
 
     -- Inserir o cliente
-    INSERT INTO tbl_clientes (nome, foto, email, senha, telefone, id_endereco_cliente)
-    VALUES (p_nome, p_foto,p_email, p_senha, p_telefone, v_id_endereco_cliente);
+    INSERT INTO tbl_clientes (nome, email, senha, telefone, id_endereco_cliente)
+    VALUES (p_nome, p_email, p_senha, p_telefone, v_id_endereco_cliente);
 END//
 
 DELIMITER ;
 
 
-CALL inserir_cliente_com_endereco('Julia', 'www.julia.com.br','julia@gmail', '1234', '11980807794', 'rua sao mateus', '06332020',
-'260', 'torre 1 apto 154', 'vila ester', 'sao paulo', 'carapicuiba');
+CALL inserir_cliente_com_endereco('Julia', 'julia@gmail', '1234', '11980807794', 'rua sao mateus', '06332020',
+'260', 'vila ester', 'sao paulo', 'carapicuiba');
 
 select * from tbl_enderecos_clientes;
 
@@ -268,6 +269,8 @@ select * from tbl_enderecos;
 
 select * from tbl_veiculos where tbl_enderecos_clientes.id_endereco_cliente = 1;
 
+drop table tbl_clientes;
+drop table tbl_cliente_funcionarios;
 /*************************
 Tabela Endereços Funcionarios
 *************************/
@@ -456,7 +459,9 @@ DELIMITER ;
 
 CALL inserir_veiculo_cliente('X6', 'BMW', '2024', 'XFDE-237', 'Azul');
 
-SELECT 
+show triggers;
+
+SELECT
     datas.datas,
     horas.horas,
     clientes.nome AS nome_cliente,
@@ -466,23 +471,34 @@ SELECT
     veiculos.marca AS marca_veiculo,
     veiculos.ano AS ano_veiculo,
     veiculos.placa AS placa_veiculo,
-    veiculos.cor AS cor_veiculo
-FROM 
+    veiculos.cor AS cor_veiculo,
+    servicos.tipo_servico AS tipo_servico,
+    servicos.descricao AS descricao_servico,
+    servicos.preco AS preco_servico,
+    servicos_agendamentos.detalhes_adicionais -- Adicione aqui o campo específico de detalhes adicionais da tbl_servicos_agendamentos
+FROM
     tbl_agendamentos AS agendamentos
-JOIN 
+JOIN
     tbl_datas_horarios AS datas_horarios ON agendamentos.id_data_horario = datas_horarios.id_data_horario
-JOIN 
+JOIN
     tbl_datas AS datas ON datas_horarios.id_data = datas.id_data
-JOIN 
+JOIN
     tbl_horas AS horas ON datas_horarios.id_horario = horas.id_horario
-JOIN 
+JOIN
     tbl_clientes_veiculos AS clientes_veiculos ON agendamentos.id_cliente_veiculo = clientes_veiculos.id_cliente_veiculo
-JOIN 
+JOIN
     tbl_clientes AS clientes ON clientes_veiculos.id_cliente = clientes.id_cliente
-JOIN 
+JOIN
     tbl_veiculos AS veiculos ON clientes_veiculos.id_veiculo = veiculos.id_veiculo
+JOIN
+    tbl_servicos_agendamentos AS servicos_agendamentos ON agendamentos.id_agendamento = servicos_agendamentos.id_agendamento
+JOIN
+    tbl_servicos AS servicos ON servicos_agendamentos.id_servico = servicos.id_servico
 WHERE
-    clientes.id_cliente = 1tbl_agendamentos;
+    clientes.id_cliente = 2;
+
+
+
 
 
 
@@ -579,6 +595,8 @@ DELIMITER ;
 
 INSERT INTO tbl_agendamentos(id_data_horario, id_cliente_veiculo)VALUES
 (2,2);
+
+show triggers;
 
 -- filtra todos os agendamentos de uma data especifica
 SELECT
@@ -686,6 +704,36 @@ CREATE TABLE tbl_servicos_agendamentos (
     CONSTRAINT FK_SERVICO_AGENDAMENTO FOREIGN KEY (id_servico)
         REFERENCES tbl_servicos (id_servico)
 );
+
+
+DELIMITER //
+
+CREATE PROCEDURE inserir_servico_agendamento (
+    IN p_detalhes_adicionais TEXT
+)
+BEGIN
+    DECLARE v_id_agendamento INT;
+    DECLARE v_id_servico INT;
+
+    -- Obter o último ID de agendamento
+    SELECT MAX(id_agendamento) INTO v_id_agendamento FROM tbl_agendamentos;
+
+    -- Obter o último ID de serviço
+    SELECT MAX(id_servico) INTO v_id_servico FROM tbl_servicos;
+
+    -- Inserir o novo registro na tabela tbl_servicos_agendamentos
+    INSERT INTO tbl_servicos_agendamentos (detalhes_adicionais, id_agendamento, id_servico)
+    VALUES (p_detalhes_adicionais, v_id_agendamento, v_id_servico);
+END//
+
+DELIMITER ;
+
+CALL inserir_servico_agendamento('Só Água');
+
+select * from tbl_servicos_agendamentos;
+
+
+
 
 INSERT INTO tbl_servicos_agendamentos(detalhes_adicionais, id_agendamento, id_servico)VALUES
 (null,

@@ -19,7 +19,6 @@ const setInserirNovoCliente = async function(dadosCliente, contentType){
                 
                 //Validação de campos obrigatórios ou com digitação inválida
                 if(dadosCliente.p_nome == ''          || dadosCliente.p_nome == undefined         || dadosCliente.p_nome == null          || dadosCliente.p_nome.length > 100  ||
-                dadosCliente.p_foto == ''          || dadosCliente.p_foto == undefined         || dadosCliente.p_foto == null            || dadosCliente.p_foto.length > 250  ||
                 dadosCliente.p_email == ''          || dadosCliente.p_email == undefined        || dadosCliente.p_email == null           || dadosCliente.p_email.length >150  ||
                 dadosCliente.p_senha == ''          || dadosCliente.p_senha == undefined        || dadosCliente.p_senha == null           || dadosCliente.p_senha.length > 100 ||  
                 dadosCliente.p_telefone == ''       || dadosCliente.p_telefone == undefined     || dadosCliente.p_telefone == null        || dadosCliente.p_telefone.length > 18  ||
